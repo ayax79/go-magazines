@@ -9,7 +9,7 @@ import (
 type (
 	// MagazineDAO Interface for crud operations on magazine
 	MagazineDAO interface {
-		Get(*uuid.UUID) (*model.Magazine, error)
+		Get(uuid.UUID) (*model.Magazine, error)
 		Put(*model.Magazine) error
 	}
 )

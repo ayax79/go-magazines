@@ -26,13 +26,13 @@ func NewRedisMagazineDAO(config *RedisConfig) (*RedisMagazineDAO, error) {
 }
 
 // Get retrieves a Magazine from redis
-func (dao *RedisMagazineDAO) Get(magazineID *uuid.UUID) (*model.Magazine, error) {
+func (dao *RedisMagazineDAO) Get(magazineID uuid.UUID) (*model.Magazine, error) {
 	result, err := dao.client.HGetAll(magazineID.String()).Result()
 	fmt.Printf("Get result for id %s :%s\n", result, err)
 	if result != nil {
 		title := result["TITLE"]
 		issue := result["ISSUE"]
-		magazine := model.NewMagazine(*magazineID, title, issue)
+		magazine := model.NewMagazine(magazineID, title, issue)
 		fmt.Printf("Returning magazine: %s\n", magazine)
 		return magazine, err
 	}
