@@ -26,6 +26,8 @@ func main() {
 	service, err := service.NewMagazineService(cfg, redisConfig)
 
 	if err != nil {
+		server.Log.Fatal("unable to create service: ", err)
+	} else {
 		err := server.Register(service)
 		if err != nil {
 			server.Log.Fatal("unable to register service: ", err)
