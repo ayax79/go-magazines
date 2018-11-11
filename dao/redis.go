@@ -1,49 +1,57 @@
 package dao
 
 import (
+	"fmt"
+
+	"github.com/ayax79/go-magazines/model"
 	"github.com/go-redis/redis"
 	"github.com/google/uuid"
 )
 
 type (
-	// MagazineDAO Interface for crud operations on magazine
-	MagazineDAO interface {
-		Get(uuid.UUID) (Magazine, error)
-		Put(Magazine) error
-	}
-
 	// RedisMagazineDAO implements MagazineDAO using Redis as the store
 	RedisMagazineDAO struct {
-		client redis.Client
-	}
-
-	// RedisConfig ton configure Redis
-	RedisConfig struct {
-		Address  string
-		Password string
-		DB       int
+		client *redis.Client
 	}
 )
 
 // NewRedisMagazineDAO constructs a new MagazineDAO instance backed by the redis implementation
-func NewRedisMagazineDAO(config RedisConfig) *MagazineDAO {
-	client := redis.NewClient(config.ToOptions)
-	return &RedisMagazineDAO{client: &client}
+func NewRedisMagazineDAO(config *RedisConfig) (*RedisMagazineDAO, error) {
+	client := redis.NewClient(config.ToOptions())
+	err := client.Ping().Err()
+	if err == nil {
+		return &RedisMagazineDAO{client: client}, nil
+	}
+	return nil, err
 }
 
 // Get retrieves a Magazine from redis
-func (dao *RedisMagazineDAO) Get(magazineID uuid.UUID) (Magazine, error) {
-		
+func (dao *RedisMagazineDAO) Get(magazineID *uuid.UUID) (*model.Magazine, error) {
+	result, err := dao.client.HGetAll(magazineID.String()).Result()
+	fmt.Printf("Get result for id %s :%s\n", result, err)
+	if result != nil {
+		title := result["TITLE"]
+		issue := result["ISSUE"]
+		magazine := model.NewMagazine(*magazineID, title, issue)
+		fmt.Printf("Returning magazine: %s\n", magazine)
+		return magazine, err
+	}
+	return nil, err
 
 }
 
-func (dao *RedisMagazineDAO) Put(magazine Magazine) error {
-	_, err := dao.client.TxPipelined(func pipe redis.Pipeliner) error {
-			return pipe
-				.HSet(magazine, "TITLE", magazine.Title)
-				.Hset(magazine, "ISSUE", magazine.Issue)
-		})
-		.Exec()
+// Put inserts or updates records
+func (dao *RedisMagazineDAO) Put(magazine *model.Magazine) error {
+	key := magazine.MagazineID.String()
+	pipe := dao.client.TxPipeline()
+	pipe.HSet(key, "TITLE", magazine.Title)
+	pipe.HSet(key, "ISSUE", magazine.Issue)
+	result, err := pipe.Exec()
+	if result != nil {
+		fmt.Printf("Put result: %s\n", result)
+	}
+	if err != nil {
+		fmt.Printf("Put error: %s\n", err)
+	}
 	return err
-	
 }

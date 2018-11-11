@@ -15,13 +15,13 @@ type (
 
 // NewRedisConfig constructs a new configuration instance
 func NewRedisConfig(address string, password string, db int) *RedisConfig {
-	return &RedisConfig {address, password, db}
+	return &RedisConfig{address, password, db}
 }
 
 func (config *RedisConfig) ToOptions() *redis.Options {
-	return &redis.Options {
-		Addr: config.Address,
+	return &redis.Options{
+		Addr:     config.Address,
 		Password: config.Password,
-		DB: config.DB
+		DB:       config.DB,
 	}
 }
