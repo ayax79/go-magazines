@@ -2,6 +2,7 @@ package service
 
 import (
 	"io/ioutil"
+	"log"
 	"net/http"
 
 	"github.com/NYTimes/gizmo/server"
@@ -72,7 +73,7 @@ func (s *MagazineService) JSONEndpoints() map[string]map[string]server.JSONEndpo
 		"/{magazine_id}": map[string]server.JSONEndpoint{
 			"GET": s.getMagazine,
 		},
-		"/": map[string]server.JSONEndpoint{
+		"": map[string]server.JSONEndpoint{
 			"POST": s.postMagazine,
 		},
 	}
@@ -81,17 +82,19 @@ func (s *MagazineService) JSONEndpoints() map[string]map[string]server.JSONEndpo
 func (s *MagazineService) getMagazine(r *http.Request) (int, interface{}, error) {
 	uuidString := web.Vars(r)["magazine_id"]
 	magazineID, err := uuid.Parse(uuidString)
-	if err != nil {
+	if err == nil {
 		magazine, err := s.magazineDAO.Get(magazineID)
-		if err != nil {
-			json, err := magazine.JSON()
-			if err != nil {
-				return http.StatusOK, json, err
-			}
-			return http.StatusInternalServerError, nil, err
+		if err == nil {
+			// json, err := magazine.JSON()
+			// if err == nil {
+			// 	return http.StatusOK, json, err
+			// }
+			// return http.StatusInternalServerError, nil, err
+			return http.StatusOK, magazine, err
 		}
 		return http.StatusNotFound, nil, err
 	}
+	log.Fatalf("Error Parsing UUID %#v", err)
 	return http.StatusBadRequest, nil, err
 }
 
@@ -111,7 +114,7 @@ func (s *MagazineService) postMagazine(r *http.Request) (int, interface{}, error
 	if err2 != nil {
 		return http.StatusInternalServerError, nil, err2
 	}
-	return http.StatusOK, nil, err2
+	return http.StatusAccepted, nil, err2
 }
 
 type jsonErr struct {
