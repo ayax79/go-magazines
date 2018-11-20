@@ -55,7 +55,7 @@ func TestCrud(t *testing.T) {
 	if err != nil {
 		t.Errorf("Error putting %s into redis: %s", magazine, err)
 	} else {
-		magazine, err := dao.Get(&magazineID)
+		magazine, err := dao.Get(magazineID)
 
 		if magazine != nil {
 
