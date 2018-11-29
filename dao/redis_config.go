@@ -20,6 +20,13 @@ func NewRedisConfig(address string, password string, db int) *RedisConfig {
 
 // ToOptions converts the RedisConfig object to a redis.Options struct
 func (config *RedisConfig) ToOptions() *redis.Options {
+
+	if len(config.Password) == 0 {
+		return &redis.Options{
+			Addr: config.Address,
+			DB:   config.DB,
+		}
+	}
 	return &redis.Options{
 		Addr:     config.Address,
 		Password: config.Password,

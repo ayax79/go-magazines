@@ -2,6 +2,7 @@ package dao
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/ayax79/go-magazines/model"
 	"github.com/go-redis/redis"
@@ -22,6 +23,7 @@ func NewRedisMagazineDAO(config *RedisConfig) (*RedisMagazineDAO, error) {
 	if err == nil {
 		return &RedisMagazineDAO{client: client}, nil
 	}
+	log.Fatalf("Error instantiating Redis Client: %#v", err)
 	return nil, err
 }
 
