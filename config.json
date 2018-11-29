@@ -1,0 +1,6 @@
+{
+    "Server": {
+        "HTTPPort": 8088,
+        "HTTPAccessLog": "/magazines/logs/access.log"
+    }
+}
