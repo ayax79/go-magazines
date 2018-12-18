@@ -2,4 +2,5 @@ vendor
 .idea
 go.sum
 go-magazines
-.vscode
+.vscodebuild
+build

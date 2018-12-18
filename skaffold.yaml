@@ -1,9 +1,9 @@
-apiVersion: skaffold/v1alpha5
+apiVersion: skaffold/v1beta1
 kind: Config
 build:
   artifacts:
-  - image: hub.docker.com/r/ayax79/go-magazines
+  - image: ayax79/go-magazines
 deploy:
   kubectl:
     manifests:
-      - k8s/*
+    - build/k8s/deployment.yaml

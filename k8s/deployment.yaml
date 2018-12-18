@@ -3,6 +3,8 @@ apiVersion: v1
 kind: Service
 metadata:
   name: go-magazines-default
+  labels: 
+    deployment: go-magazines
 spec:
   selector:
     app: go-magazines-default
@@ -16,6 +18,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: go-magazines-default
+  labels:
+    deployment: go-magazines
 spec:
   selector:
     matchLabels:
@@ -30,7 +34,7 @@ spec:
     spec:
       containers:
       - name: go-magazines-default
-        image: ayax79/go-magazines
+        image:  registry.hub.docker.com/ayax79/go-magazines:latest
         imagePullPolicy: Always
         resources:
           requests:
